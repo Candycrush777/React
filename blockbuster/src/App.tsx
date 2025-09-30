@@ -1,35 +1,77 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import { Button } from './components/ui/Button';
+import { Input } from './components/ui/Input';
+import { searchMovies } from './services/movieService';
+import type { Movie } from './types/movie';
+import './App.css';
+import { MovieCard } from './components/ui/MovieCard';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [searchQuery, setSearchQuery] = useState('');
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSearch = async () => {
+    // Validación
+    if (!searchQuery.trim()) {
+      setError('Por favor escribe algo para buscar');
+      return;
+    }
+
+    // Reset estados
+    setError('');
+    setLoading(true);
+    setMovies([]);
+
+    try {
+      const result = await searchMovies(searchQuery);
+      setMovies(result.Search);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al buscar películas');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div>
+      {/* Header */}
+      <div className="header">
+        <h1>🎬 Blockbuster</h1>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+
+      {/* Buscador */}
+      <div className="main-container">
+        <div className="search-box">
+          <Input 
+            value={searchQuery}
+            onChange={setSearchQuery}
+            placeholder="Buscar películas..."
+          />
+          <Button onClick={handleSearch} disabled={loading}>
+            {loading ? 'Buscando...' : 'Buscar'}
+          </Button>
+        </div>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+
+      {/* Error */}
+      {error && (
+        <div className="error-message">
+          <p>{error}</p>
+        </div>
+      )}
+
+      {/* Resultados */}
+      {movies.length > 0 && (
+        <div className="movies-grid">
+          {movies.map((movie) => (
+            <MovieCard key={movie.imdbID} movie={movie} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
-export default App
+export default App;
