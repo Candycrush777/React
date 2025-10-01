@@ -1,4 +1,5 @@
-import type { Movie } from "../../types/movie";
+import { useState } from 'react';
+import type { Movie } from '../../types/movie';
 
 
 interface MovieCardProps {
@@ -6,13 +7,24 @@ interface MovieCardProps {
 }
 
 export const MovieCard = ({ movie }: MovieCardProps) => {
+  const [imageError, setImageError] = useState(false);
+  const hasValidPoster = movie.Poster && movie.Poster !== 'N/A' && !imageError;
+
   return (
     <div className="movie-card">
-      <img 
-        src={movie.Poster !== 'N/A' ? movie.Poster : 'https://via.placeholder.com/300x450?text=No+Image'} 
-        alt={movie.Title}
-        className="movie-poster"
-      />
+      {hasValidPoster ? (
+        <img 
+          src={movie.Poster} 
+          alt={movie.Title}
+          className="movie-poster"
+          onError={() => setImageError(true)}
+        />
+      ) : (
+        <div className="movie-poster-placeholder">
+          <span className="placeholder-icon">🎬</span>
+          <span className="placeholder-text">Sin imagen</span>
+        </div>
+      )}
       <div className="movie-info">
         <h3 className="movie-title">{movie.Title}</h3>
         <p className="movie-year">{movie.Year}</p>

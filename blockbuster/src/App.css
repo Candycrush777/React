@@ -32,7 +32,7 @@ body {
 
 .header h1 {
   color: var(--blockbuster-yellow);
-  font-size: 2.5rem; /* Tamaño base más pequeño */
+  font-size: 2.5rem;
   margin: 0;
   font-weight: bold;
 }
@@ -45,15 +45,17 @@ body {
   align-items: center;
   flex: 1;
   width: 100%;
-  padding: 1rem; /* Padding base más pequeño */
+  padding: 1rem;
 }
 
 /* Caja de búsqueda */
 .search-box {
   display: flex;
-  gap: 1rem; /* Gap base más pequeño */
+  gap: 1rem;
   width: 100%;
-  max-width: 1200px; /* Límite máximo para pantallas grandes */
+  max-width: 1200px;
+  flex-wrap: wrap; /* permite que input y botón se apilen en pantallas estrechas */
+  align-items: center;
 }
 
 /* Error message */
@@ -73,20 +75,58 @@ body {
   font-weight: bold;
 }
 
-/* Movies Grid */
+/* Movies Grid - controlado con breakpoints claros (5 → 4 → 3 → 2 → 1) */
 .movies-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 2rem;
-  padding: 2rem;
+  gap: clamp(0.75rem, 1.5vw, 2rem);
+  padding: 1rem;
   max-width: 1400px;
-  margin: 0 auto;
+  margin: 0 auto 2rem auto;
+  width: 100%;
+  align-items: start;
+}
+
+/* Desktop muy grande — 5 columnas */
+@media (min-width: 1400px) {
+  .movies-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* Desktop grande — 4 columnas */
+@media (min-width: 1200px) and (max-width: 1399px) {
+  .movies-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Desktop medio / tablet grande — 3 columnas */
+@media (min-width: 900px) and (max-width: 1199px) {
+  .movies-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Tablet / móvil grande — 2 columnas */
+@media (min-width: 600px) and (max-width: 899px) {
+  .movies-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Móviles pequeños — 1 columna */
+@media (max-width: 599px) {
+  .movies-grid {
+    grid-template-columns: 1fr;
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
 }
 
 /* Input */
 .input {
   flex: 1;
-  padding: 0.875rem 1.25rem; /* Padding base más pequeño */
+  padding: 0.875rem 1.25rem;
   font-size: 1rem;
   border: 3px solid var(--blockbuster-yellow);
   border-radius: 8px;
@@ -111,14 +151,14 @@ body {
   background-color: var(--blockbuster-yellow);
   color: var(--blockbuster-blue);
   border: none;
-  padding: 0.875rem 1.5rem; /* Padding base más pequeño */
+  padding: 0.875rem 1.5rem;
   font-size: 1rem;
   font-weight: bold;
   border-radius: 8px;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
   white-space: nowrap;
-  min-width: fit-content; /* Para que no se encoja demasiado */
+  flex: 0 0 auto; /* evita que el botón se encoja cuando el input crece */
 }
 
 .button:hover {
@@ -136,8 +176,65 @@ body {
   transform: none;
 }
 
+/* Asegurar que cada tarjeta se alinee arriba y tenga estructura columna */
+.movie-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 100%;
+  align-items: stretch;
+  background: white;
+  color: var(--text-dark);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+/* Poster (imagen): mantener proporción, cubrir y no distorsionar */
+.movie-card .movie-poster {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  display: block;
+  background: #eee;
+}
+
+/* Contenido de la tarjeta: que ocupe todo el espacio vertical sobrante */
+.movie-card .movie-content {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1 1 auto;
+  min-height: 0; /* importante para evitar overflow en flex children */
+}
+
+/* Título: truncado y legible */
+.movie-card .movie-title {
+  padding: 5px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  color: var(--text-dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Metadatos (ej: año, tipo) alineados abajo para que el card tenga orden */
+/* Añadimos padding arriba y abajo para que el "footer" tenga espacio */
+.movie-card .movie-year {
+ 
+ padding: 5px;
+  font-size: 1rem;
+  color: var(--text-dark);
+}
+
 /* ==================== */
-/* MEDIA QUERIES - RESPONSIVE */
+/* MEDIA QUERIES - RESPONSIVE (header, inputs y tamaños) */
 /* ==================== */
 
 /* Tablets (768px - 1024px) */
@@ -145,82 +242,82 @@ body {
   .header {
     padding: 3rem 2rem 2rem 2rem;
   }
-  
+
   .header h1 {
     font-size: 3rem;
   }
-  
+
   .main-container {
     padding: 2rem;
   }
-  
+
   .search-box {
     gap: 1.5rem;
     max-width: 700px;
   }
-  
+
   .input {
     padding: 1rem 1.5rem;
     font-size: 1.1rem;
   }
-  
+
   .button {
     padding: 1rem 2rem;
     font-size: 1.1rem;
   }
 }
 
-/* Desktop (1024px+) */
+/* Desktop (1024px+) ajustes generales */
 @media (min-width: 1024px) {
   .header {
     padding: 5rem 2rem 2rem 2rem;
   }
-  
+
   .header h1 {
     font-size: 3.5rem;
   }
-  
+
   .main-container {
     padding: 4rem;
   }
-  
+
   .search-box {
     gap: 2rem;
     max-width: 800px;
   }
-  
+
   .input {
     padding: 1.2rem 1.8rem;
     font-size: 1.2rem;
   }
-  
+
   .button {
     padding: 1.2rem 2.5rem;
     font-size: 1.2rem;
   }
 }
 
-/* Móviles pequeños (hasta 480px) */
+/* Móviles pequeños (hasta 480px) ajustes */
 @media (max-width: 480px) {
   .header {
     padding: 1.5rem 1rem 1rem 1rem;
   }
-  
+
   .header h1 {
     font-size: 2rem;
   }
-  
+
   .search-box {
     flex-direction: column; /* Input y botón en columna */
     gap: 0.75rem;
     padding: 0 1rem;
   }
-  
+
   .input {
     padding: 0.75rem 1rem;
     font-size: 0.9rem;
   }
-  
+
   .button {
     padding: 0.75rem 1.5rem;
     font-size: 0.9rem;
@@ -233,11 +330,11 @@ body {
   .header {
     padding: 1rem;
   }
-  
+
   .header h1 {
     font-size: 2rem;
   }
-  
+
   .main-container {
     padding: 1rem;
     justify-content: flex-start; /* Para pantallas cortas */
