@@ -1,6 +1,6 @@
 import type { MovieSearchResponse, MovieErrorResponse } from '../types/movie';
 
-const API_KEY = '929321f6';
+const API_KEY = '929321f6'; // mas adelante la meteremos en una variable de entorno dependiendo lo que queramos
 const API_URL = `https://www.omdbapi.com/?apikey=${API_KEY}`;
 
 // Función para buscar películas
